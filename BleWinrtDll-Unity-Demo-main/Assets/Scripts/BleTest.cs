@@ -156,41 +156,10 @@ public class BleTest : MonoBehaviour
         byte[] packageReceived;
         Nombre = BLE.ReadPackage();
         Debug.Log("Nombre" + Nombre);
-        packageReceived = BLE.ReadBytes(Nombre);
+        packageReceived = BLE.ReadBytes();
         datos = BitConverter.ToSingle(packageReceived, 0);
         TextTargetDeviceData7.text = "service: " + Nombre;
-        switch (Nombre)
-        {
-            case "{abf0e002-b597-4be0-b869-6054b7ed0ce3}":
-                acx = datos;
-                TextTargetDeviceData1.text = "acx: " + acx;
-                break;
-            case "{abf0e003-b597-4be0-b869-6054b7ed0ce3}":
-                acy = datos;
-                TextTargetDeviceData2.text = "acy: " + acy;
 
-                break;
-            case "{abf0e004-b597-4be0-b869-6054b7ed0ce3}":
-                acz = datos;
-                TextTargetDeviceData3.text = "acz: " + acz;
-                break;
-            case "{abf0e005-b597-4be0-b869-6054b7ed0ce3}":
-
-                gyrox = datos;
-                TextTargetDeviceData4.text = "gyrox: " + gyrox;
-
-                break;
-            case "{abf0e006-b597-4be0-b869-6054b7ed0ce3}":
-
-                gyroy = datos;
-                TextTargetDeviceData5.text = "gyroy: " + gyroy;
-
-                break;
-            case "{abf0e007-b597-4be0-b869-6054b7ed0ce3}":
-                gyroz = datos;
-                TextTargetDeviceData6.text = "gyroz: " + gyroz;
-                break;
-        }
     }
 
         // If the system architecture is little-endian (that is, little end first),
@@ -241,8 +210,40 @@ public class BleTest : MonoBehaviour
 
 
                 }
-                
-                 break;
+                switch (Nombre)
+                {
+                    case "{abf0e002-b597-4be0-b869-6054b7ed0ce3}":
+                        acx = datos;
+                        TextTargetDeviceData1.text = "acx: " + acx;
+                        break;
+                    case "{abf0e003-b597-4be0-b869-6054b7ed0ce3}":
+                        acy = datos;
+                        TextTargetDeviceData2.text = "acy: " + acy;
+
+                        break;
+                    case "{abf0e004-b597-4be0-b869-6054b7ed0ce3}":
+                        acz = datos;
+                        TextTargetDeviceData3.text = "acz: " + acz;
+                        break;
+                    case "{abf0e005-b597-4be0-b869-6054b7ed0ce3}":
+
+                        gyrox = datos;
+                        TextTargetDeviceData4.text = "gyrox: " + gyrox;
+
+                        break;
+                    case "{abf0e006-b597-4be0-b869-6054b7ed0ce3}":
+
+                        gyroy = datos;
+                        TextTargetDeviceData5.text = "gyroy: " + gyroy;
+
+                        break;
+                    case "{abf0e007-b597-4be0-b869-6054b7ed0ce3}":
+                        gyroz = datos;
+                        TextTargetDeviceData6.text = "gyroz: " + gyroz;
+                        break;
+                }
+
+                break;
 
             /*if (acx != lastAcx || acy != lastAcy || acz != lastAcz || gyrox != lastGyrox || gyroz != lastGyroz ||
                 gyroy != lastGyroz || LastNombre != Nombre) //&& pres1 != lastPres1 && pres2 != lastPres2 && pres3 != lastPres3)

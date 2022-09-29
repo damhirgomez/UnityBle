@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 using UnityEngine;
@@ -214,8 +215,10 @@ public class BLE
     {
         Impl.BLEData packageReceived;
         bool result = Impl.PollData(out packageReceived, true);
+        Thread.Sleep(200);
         if (result)
         {
+            
             if (packageReceived.size > 512)
                 throw new ArgumentOutOfRangeException("Please keep your ble package at a size of maximum 512, cf. spec!\n"
                     + "This is to prevent package splitting and minimize latency.");
@@ -226,16 +229,17 @@ public class BLE
         return "nada";
     }
 
-    public static byte[] ReadBytes(string characteristicUuid)
+    public static byte[] ReadBytes()
     {
         Impl.BLEData packageReceived;
         bool result = Impl.PollData(out packageReceived, true);
+        Thread.Sleep(200);
 
-        if (result && packageReceived.characteristicUuid != characteristicUuid)
+        if (result)
         {
             Debug.Log("pack: " + result);
-            Debug.Log("From: " + packageReceived);
-
+            Debug.Log("From: " + packageReceived.characteristicUuid);
+            
             if (packageReceived.size > 512)
                 throw new ArgumentOutOfRangeException("Package too large.");
             return packageReceived.buf;
