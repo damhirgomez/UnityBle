@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Text;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,12 +14,7 @@ public class BleTest : MonoBehaviour
     string targetDeviceName = "ArduinoIMU";
     string serviceUuid = "{ABF0E000-B597-4BE0-B869-6054B7ED0CE3}";
     string[] characteristicUuids = {      
-         "{ABF0E002-B597-4BE0-B869-6054B7ED0CE3}",
-         "{ABF0E003-B597-4BE0-B869-6054B7ED0CE3}",
-         "{ABF0E004-B597-4BE0-B869-6054B7ED0CE3}",
-         "{ABF0E005-B597-4BE0-B869-6054B7ED0CE3}",
-         "{ABF0E006-B597-4BE0-B869-6054B7ED0CE3}",
-         "{ABF0E007-B597-4BE0-B869-6054B7ED0CE3}"
+         "{ABF0E002-B597-4BE0-B869-6054B7ED0CE3}"
     };
 
     BLE ble;
@@ -34,9 +30,8 @@ public class BleTest : MonoBehaviour
     // GUI elements
     public Text TextDiscoveredDevices, TextIsScanning, TextTargetDeviceConnection, TextTargetDeviceData1, TextTargetDeviceData2, TextTargetDeviceData3, TextTargetDeviceData4, TextTargetDeviceData5, TextTargetDeviceData6, TextTargetDeviceData7;
     public Button ButtonEstablishConnection, ButtonStartScan;
-    float acx, lastAcx, acy, lastAcy, acz, lastAcz, gyrox, lastGyrox, gyroy, lastGyroy, gyroz, lastGyroz, pres1, lastPres1, pres2, lastPres2, pres3, lastPres3; //damhir
-    float datos;//damhir
-    string Nombre, LastNombre;//damhir
+    float acx, lastAcx, acy, lastAcy, acz, lastAcz, gyrox, lastGyrox, gyroy, lastGyroy, gyroz, lastGyroz, pres1, lastPres1, pres2, lastPres2, pres3, lastPres3; //damhi
+    string datos, LastDato;//damhir
     // Start is called before the first frame update
     void Start()
     {
@@ -154,33 +149,31 @@ public class BleTest : MonoBehaviour
     private void ReadBleData(object obj)
     {
         byte[] packageReceived;
-        Nombre = BLE.ReadPackage();
-        Debug.Log("Nombre" + Nombre);
         packageReceived = BLE.ReadBytes();
-        datos = BitConverter.ToSingle(packageReceived, 0);
-        TextTargetDeviceData7.text = "service: " + Nombre;
+        datos = Encoding.UTF8.GetString(packageReceived);
+
 
     }
 
-        // If the system architecture is little-endian (that is, little end first),
-        // reverse the byte array.
-        //acx = packageReceived;
-        // Output: int: 25
-        // Convert little Endian.
-        // In this example we're interested about an angle
-        // value on the first field of our package.
-        //acx =  packageReceived[0];
+    // If the system architecture is little-endian (that is, little end first),
+    // reverse the byte array.
+    //acx = packageReceived;
+    // Output: int: 25
+    // Convert little Endian.
+    // In this example we're interested about an angle
+    // value on the first field of our package.
+    //acx =  packageReceived[0];
 
-        //acz = packageReceived[2];
-        //gyrox = packageReceived[3];
-        //gyroy = packageReceived[4];
-        //gyroz = packageReceived[5];
-        //pres1 = packageReceived[6];
-        //pres2 = packageReceived[7];
-        //pres3 = packageReceived[8];
-        //Debug.Log("Angle: " + remoteAngle);
-        
-    
+    //acz = packageReceived[2];
+    //gyrox = packageReceived[3];
+    //gyroy = packageReceived[4];
+    //gyroz = packageReceived[5];
+    //pres1 = packageReceived[6];
+    //pres2 = packageReceived[7];
+    //pres3 = packageReceived[8];
+    //Debug.Log("Angle: " + remoteAngle);
+
+
 
     void UpdateGuiText(string action)
     {
@@ -210,77 +203,42 @@ public class BleTest : MonoBehaviour
 
 
                 }
-                switch (Nombre)
+
+                if (datos != LastDato) //&& pres1 != lastPres1 && pres2 != lastPres2 && pres3 != lastPres3)
                 {
-                    case "{abf0e002-b597-4be0-b869-6054b7ed0ce3}":
-                        acx = datos;
-                        TextTargetDeviceData1.text = "acx: " + acx;
-                        break;
-                    case "{abf0e003-b597-4be0-b869-6054b7ed0ce3}":
-                        acy = datos;
-                        TextTargetDeviceData2.text = "acy: " + acy;
 
-                        break;
-                    case "{abf0e004-b597-4be0-b869-6054b7ed0ce3}":
-                        acz = datos;
-                        TextTargetDeviceData3.text = "acz: " + acz;
-                        break;
-                    case "{abf0e005-b597-4be0-b869-6054b7ed0ce3}":
 
-                        gyrox = datos;
-                        TextTargetDeviceData4.text = "gyrox: " + gyrox;
+                    char delimitador = ',';
 
-                        break;
-                    case "{abf0e006-b597-4be0-b869-6054b7ed0ce3}":
+                    string[] valores = datos.Split(delimitador);
 
-                        gyroy = datos;
-                        TextTargetDeviceData5.text = "gyroy: " + gyroy;
+                    TextTargetDeviceData1.text = "Acx: " + valores[0];
 
-                        break;
-                    case "{abf0e007-b597-4be0-b869-6054b7ed0ce3}":
-                        gyroz = datos;
-                        TextTargetDeviceData6.text = "gyroz: " + gyroz;
-                        break;
+
+                    TextTargetDeviceData2.text = "Acy: " + valores[1];
+
+
+
+                    TextTargetDeviceData3.text = "Acz: " + valores[2];
+
+
+
+                    TextTargetDeviceData4.text = "gyrox: " + valores[3];
+
+
+
+                    TextTargetDeviceData5.text = "gyroy: " + valores[4];
+
+
+
+                    TextTargetDeviceData6.text = "gyroz: " + valores[5]; 
+                    LastDato = datos;
+
+
+
                 }
-
                 break;
 
-            /*if (acx != lastAcx || acy != lastAcy || acz != lastAcz || gyrox != lastGyrox || gyroz != lastGyroz ||
-                gyroy != lastGyroz || LastNombre != Nombre) //&& pres1 != lastPres1 && pres2 != lastPres2 && pres3 != lastPres3)
-            {
-
-                        TextTargetDeviceData1.text = "Acx: " + acx;
-
-
-                        TextTargetDeviceData2.text = "Acy: " + acy;
-
-
-
-                        TextTargetDeviceData3.text = "Acz: " + acz;
-
-
-
-                        TextTargetDeviceData4.text = "gyrox: " + gyrox;
-
-
-
-                        TextTargetDeviceData5.text = "gyroy: " + gyroy;
-
-
-
-                        TextTargetDeviceData6.text = "gyroz: " + gyroz; 
-
-
-                lastAcx = acx;
-                lastAcy = acy;
-                lastAcz = acz;
-                lastGyrox = gyrox;
-                lastGyroy = gyroy;
-                lastGyroz = gyroz;
-                LastNombre = Nombre;
-
-
-            }*/
 
              
         }

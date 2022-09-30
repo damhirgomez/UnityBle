@@ -215,7 +215,6 @@ public class BLE
     {
         Impl.BLEData packageReceived;
         bool result = Impl.PollData(out packageReceived, true);
-        Thread.Sleep(200);
         if (result)
         {
             
@@ -233,12 +232,11 @@ public class BLE
     {
         Impl.BLEData packageReceived;
         bool result = Impl.PollData(out packageReceived, true);
-        Thread.Sleep(200);
 
         if (result)
         {
             Debug.Log("pack: " + result);
-            Debug.Log("From: " + packageReceived.characteristicUuid);
+            Debug.Log("From: " + packageReceived.size);
             
             if (packageReceived.size > 512)
                 throw new ArgumentOutOfRangeException("Package too large.");
