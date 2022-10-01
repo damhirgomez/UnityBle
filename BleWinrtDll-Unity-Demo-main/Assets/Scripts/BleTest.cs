@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using System.Linq;
 using System.Threading;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 using Debug = UnityEngine.Debug;
@@ -28,10 +31,12 @@ public class BleTest : MonoBehaviour
     Thread scanningThread, connectionThread, readingThread;
 
     // GUI elements
-    public Text TextDiscoveredDevices, TextIsScanning, TextTargetDeviceConnection, TextTargetDeviceData1, TextTargetDeviceData2, TextTargetDeviceData3, TextTargetDeviceData4, TextTargetDeviceData5, TextTargetDeviceData6, TextTargetDeviceData7;
+    public Text TextDiscoveredDevices, TextIsScanning, TextTargetDeviceConnection, TextTargetDeviceData1, TextTargetDeviceData2, TextTargetDeviceData3, TextTargetDeviceData4, TextTargetDeviceData5, TextTargetDeviceData6, TextTargetDeviceData7, InputText;
     public Button ButtonEstablishConnection, ButtonStartScan;
     float acx, lastAcx, acy, lastAcy, acz, lastAcz, gyrox, lastGyrox, gyroy, lastGyroy, gyroz, lastGyroz, pres1, lastPres1, pres2, lastPres2, pres3, lastPres3; //damhi
-    string datos, LastDato;//damhir
+    string datos, LastDato, TextInput;//damhir
+    public string input;
+    public InputField FileEnter;
     // Start is called before the first frame update
     void Start()
     {
@@ -39,7 +44,7 @@ public class BleTest : MonoBehaviour
         ButtonEstablishConnection.enabled = false;
         TextTargetDeviceConnection.text = targetDeviceName + " not found.";
         readingThread = new Thread(ReadBleData);
-
+        
     }
 
     // Update is called once per frame
@@ -155,6 +160,41 @@ public class BleTest : MonoBehaviour
 
     }
 
+    private static void addRecord(string ACX, string ACY, string ACZ, string GX, string GY, string GZ, string PRESS1, string PRESS2, string PRESS3, string DATE, string filepath)
+    {
+
+        try
+        {
+            var firstWrite = !File.Exists(filepath);
+            
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(@filepath, true))
+            {
+                if (firstWrite)
+                {
+                    file.Write("ACX" + "," + "ACY" + "," + "ACZ" + "," + "GX" + "," + "GY" + "," + "GZ" + "," + "PRESS1" + "," + "PRESS2" + "," + "PRESS3" + "," + "DATE");
+                }
+                else
+                {
+                    file.WriteLine();
+                    file.Write(ACX + "," + ACY + "," + ACZ + "," + GX + "," + GY + "," + GZ + "," + PRESS1 + "," + PRESS2 + "," + PRESS3 + "," + DATE);
+                }
+
+            }
+
+        }
+        catch(Exception ex)
+        {
+            throw new ApplicationException("error Saving:", ex);
+        }
+    }
+
+    public void ReadInput(string s)
+    {
+        input = s;
+        
+    }
+
+
     // If the system architecture is little-endian (that is, little end first),
     // reverse the byte array.
     //acx = packageReceived;
@@ -233,8 +273,9 @@ public class BleTest : MonoBehaviour
 
                     TextTargetDeviceData6.text = "gyroz: " + valores[5]; 
                     LastDato = datos;
-
-
+                    String dateNow = DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss");
+                    TextInput = input;
+                    addRecord(valores[0], valores[1], valores[2], valores[3], valores[4], valores[5],"0","0","0", dateNow, TextInput);
 
                 }
                 break;
