@@ -9,7 +9,8 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 using Debug = UnityEngine.Debug;
-
+using UnityEngine.SceneManagement;
+ 
 
 public class BleTest : MonoBehaviour
 {
@@ -45,6 +46,7 @@ public class BleTest : MonoBehaviour
         ButtonEstablishConnection.enabled = false;
         TextTargetDeviceConnection.text = targetDeviceName + " not found.";
         readingThread = new Thread(ReadBleData);
+        scanningThread = new Thread(ScanBleDevices);
         
     }
 
@@ -64,9 +66,13 @@ public class BleTest : MonoBehaviour
         } else
         {
             /* Restart scan in same play session not supported yet.
+            
             if (!ButtonStartScan.enabled)
-                ButtonStartScan.enabled = true;
-            */
+            {
+                
+            }*/
+
+
 
             if (TextIsScanning.text != "Not scanning.")
             {
@@ -100,11 +106,13 @@ public class BleTest : MonoBehaviour
 
     private void OnDestroy()
     {
+        ble.Close();
         CleanUp();
     }
 
     private void OnApplicationQuit()
     {
+        ble.Close();
         CleanUp();
     }
 
@@ -115,10 +123,10 @@ public class BleTest : MonoBehaviour
     {
         try
         {
-            scan.Cancel();
-            ble.Close();
-            scanningThread.Abort();
-            connectionThread.Abort();
+            
+            
+            Thread.Sleep(500);
+
         } catch(NullReferenceException e)
         {
             Debug.Log("Thread or object never initialized.\n" + e);
@@ -130,8 +138,12 @@ public class BleTest : MonoBehaviour
         devicesCount = 0;
         isScanning = true;
         discoveredDevices.Clear();
-        scanningThread = new Thread(ScanBleDevices);
-        scanningThread.Start();
+        if (!scanningThread.IsAlive)
+        {
+            scanningThread = new Thread(ScanBleDevices);
+            scanningThread.Start();
+        }
+                
         TextIsScanning.color = new Color(244, 180, 26);
         TextIsScanning.text = "Scanning...";
         TextDiscoveredDevices.text = "";
@@ -149,8 +161,9 @@ public class BleTest : MonoBehaviour
         // Reset previous discovered devices
         discoveredDevices.Clear();
         TextDiscoveredDevices.text = "No devices.";
-        deviceId = null;
         CleanUp();
+        SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
+
     }
 
     private void ReadBleData(object obj)
@@ -287,9 +300,12 @@ public class BleTest : MonoBehaviour
 
                 }
                 break;
+            case "rescan":
+                StartScanHandler();
+                            
+                break;
 
 
-             
         }
     }
 
@@ -299,7 +315,7 @@ public class BleTest : MonoBehaviour
         Debug.Log("BLE.ScanDevices() started.");
         scan.Found = (_deviceId, deviceName) =>
         {
-            Debug.Log("found device with name: " + deviceName);
+            Debug.Log("found device with name: " + deviceName); 
             discoveredDevices.Add(_deviceId, deviceName);
 
             if (deviceId == null && deviceName == targetDeviceName)
@@ -315,19 +331,13 @@ public class BleTest : MonoBehaviour
         };
         while (deviceId == null)
         Thread.Sleep(500);
-        scan.Cancel();
-        scanningThread = null;
+        
         isScanning = false;
 
         if (deviceId == "-1")
         {
-            Thread.Sleep(500);
-            scan.Cancel();
-            scanningThread = null;
-            isScanning = false;
-            StartScanHandler();
             Debug.Log("no device found!");
-
+            return;
         }
     }
 

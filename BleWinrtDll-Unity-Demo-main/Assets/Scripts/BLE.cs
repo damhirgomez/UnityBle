@@ -128,7 +128,11 @@ public class BLE
         if (scanThread == Thread.CurrentThread)
             throw new InvalidOperationException("a new scan can not be started from a callback of the previous scan");
         else if (scanThread != null)
+        {
+            Impl.StopDeviceScan();
             throw new InvalidOperationException("the old scan is still running");
+        }
+            
         currentScan.Found = null;
         currentScan.Finished = null;
         scanThread = new Thread(() =>
@@ -256,6 +260,7 @@ public class BLE
 
     public void Close()
     {
+        Impl.StopDeviceScan();
         Impl.Quit();
         isConnected = false;
     }

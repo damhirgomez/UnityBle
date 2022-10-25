@@ -68,8 +68,8 @@ void setup()
     };
   }
 
-  BLE.setDeviceName("ArduinoIMU");
-  BLE.setLocalName("ArduinoIMU");
+  BLE.setLocalName("ProxIMU");
+  BLE.setDeviceName("ProxIMU");
   BLE.setAdvertisedService(imu_service);
 
 
