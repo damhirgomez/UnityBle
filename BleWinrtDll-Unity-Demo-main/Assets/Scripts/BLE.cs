@@ -136,18 +136,24 @@ public class BLE
             Impl.StartDeviceScan();
             Impl.DeviceUpdate res = new Impl.DeviceUpdate();
             List<string> deviceIds = new List<string>();
-            Dictionary<string, string> deviceNames = new Dictionary<string, string>();
-            //Impl.ScanStatus status;
+            Dictionary<string, string> deviceName = new Dictionary<string, string>();
+            Dictionary<string, bool> deviceIsConnectable = new Dictionary<string, bool>();
+            Impl.ScanStatus status;
             while (Impl.PollDevice(out res, true) != Impl.ScanStatus.FINISHED)
             {
-                if (res.nameUpdated)
+                if (!deviceIds.Contains(res.id))
                 {
                     deviceIds.Add(res.id);
-                    deviceNames.Add(res.id, res.name);
+                    deviceName[res.id] = "";
+                    deviceIsConnectable[res.id] = false;
                 }
+                if (res.nameUpdated)
+                    deviceName[res.id] = res.name;
+                if (res.isConnectableUpdated)
+                    deviceIsConnectable[res.id] = res.isConnectable;
                 // connectable device
-                if (deviceIds.Contains(res.id) && res.isConnectable)
-                    currentScan.Found?.Invoke(res.id, deviceNames[res.id]);
+                if (deviceName[res.id] != "" && deviceIsConnectable[res.id] == true)
+                    currentScan.Found?.Invoke(res.id, deviceName[res.id]);
                 // check if scan was cancelled in callback
                 if (currentScan.cancelled)
                     break;

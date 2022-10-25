@@ -14,7 +14,7 @@ using Debug = UnityEngine.Debug;
 public class BleTest : MonoBehaviour
 {
     // Change this to match your device.
-    string targetDeviceName = "ArduinoIMU";
+    string targetDeviceName = "ProxIMU";
     string serviceUuid = "{ABF0E000-B597-4BE0-B869-6054B7ED0CE3}";
     string[] characteristicUuids = {      
          "{ABF0E002-B597-4BE0-B869-6054B7ED0CE3}"
@@ -67,6 +67,7 @@ public class BleTest : MonoBehaviour
             if (!ButtonStartScan.enabled)
                 ButtonStartScan.enabled = true;
             */
+
             if (TextIsScanning.text != "Not scanning.")
             {
                 TextIsScanning.color = Color.white;
@@ -313,15 +314,20 @@ public class BleTest : MonoBehaviour
                 deviceId = "-1";
         };
         while (deviceId == null)
-            Thread.Sleep(500);
+        Thread.Sleep(500);
         scan.Cancel();
         scanningThread = null;
         isScanning = false;
 
         if (deviceId == "-1")
         {
+            Thread.Sleep(500);
+            scan.Cancel();
+            scanningThread = null;
+            isScanning = false;
+            StartScanHandler();
             Debug.Log("no device found!");
-            return;
+
         }
     }
 
