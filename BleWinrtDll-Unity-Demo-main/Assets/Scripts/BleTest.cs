@@ -15,7 +15,7 @@ using UnityEngine.SceneManagement;
 public class BleTest : MonoBehaviour
 {
     // Change this to match your device.
-    string targetDeviceName = "ProxIMU";
+    string targetDeviceName = "ProxSIMityGlove";
     string serviceUuid = "{ABF0E000-B597-4BE0-B869-6054B7ED0CE3}";
     string[] characteristicUuids = {      
          "{ABF0E002-B597-4BE0-B869-6054B7ED0CE3}"

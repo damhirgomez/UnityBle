@@ -68,8 +68,8 @@ void setup()
     };
   }
 
-  BLE.setLocalName("ProxIMU");
-  BLE.setDeviceName("ProxIMU");
+  BLE.setLocalName("ProxSIMityGlove");
+  BLE.setDeviceName("ProxSIMityGlove");
   BLE.setAdvertisedService(imu_service);
 
 
